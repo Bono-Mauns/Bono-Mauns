@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استوديو مانوس</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- شاشة تسجيل الدخول -->
+    <div id="login-screen" class="screen active">
+        <div class="login-container">
+            <h1>استوديو مانوس</h1>
+            <p>الإصدار الخاص</p>
+            <input type="password" id="password-input" placeholder="أدخل كلمة المرور">
+            <button id="login-button">دخول</button>
+            <p id="login-error" class="error-message"></p>
+        </div>
+    </div>
+
+    <!-- شاشة الاستوديو الرئيسية -->
+    <div id="studio-screen" class="screen">
+        <header>
+            <h1>استوديو مانوس الإبداعي</h1>
+        </header>
+        <main>
+            <!-- قسم الدردشة -->
+            <div class="tool-section" id="chat-tool">
+                <h2>الدردشة مع مانوس (v0.1)</h2>
+                <div id="chat-window">
+                    <div class="message manus-message">أهلاً بك يا محمود. أنا جاهز.</div>
+                </div>
+                <div class="chat-input-container">
+                    <input type="text" id="chat-input" placeholder="اكتب رسالتك هنا...">
+                    <button id="send-button">إرسال</button>
+                </div>
+                <div id="thinking-indicator" style="display: none;">
+                    <p>مانوس يفكر...</p>
+                </div>
+            </div>
+
+            <!-- أقسام الأدوات المستقبلية ستوضع هنا -->
+            <!-- <div class="tool-section"><h2>مولد الصور</h2></div> -->
+            <!-- <div class="tool-section"><h2>مولد الفيديو</h2></div> -->
+
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
