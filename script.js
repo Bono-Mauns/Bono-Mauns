@@ -1,85 +1,77 @@
-// --- انتظر حتى يتم تحميل كل شيء في الصفحة ---
+function checkPassword() {
+    // كلمة المرور السرية
+    const secret = "0102948596Aa"; 
+
+    // اقرأ القيمة من حقل الإدخال
+    const input = document.getElementById('password-input').value;
+
+    // قارن بينهما
+    if (input === secret) {
+        // إذا كانت صحيحة، اخفِ شاشة الدخول وأظهر الاستوديو
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('studio-screen').style.display = 'flex';
+    } else {
+        // إذا كانت خاطئة، أظهر رسالة خطأ
+        const loginError = document.getElementById('login-error');
+        loginError.textContent = "كلمة المرور غير صحيحة. حاول مرة أخرى.";
+        // امسح حقل الإدخال
+        document.getElementById('password-input').value = "";
+    }
+}
+
+// --- ربط الوظيفة بالأحداث ---
+
+// انتظر حتى يتم تحميل الصفحة بالكامل
 document.addEventListener('DOMContentLoaded', () => {
+    // اربط الزر بالوظيفة
+    document.getElementById('login-button').addEventListener('click', checkPassword);
 
-    // --- تعريف العناصر ---
-    const loginScreen = document.getElementById('login-screen');
-    const studioScreen = document.getElementById('studio-screen');
-    const passwordInput = document.getElementById('password-input');
-    const loginButton = document.getElementById('login-button');
-    const loginError = document.getElementById('login-error');
+    // اربط زر Enter بالوظيفة
+    document.getElementById('password-input').addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // امنع السلوك الافتراضي
+            checkPassword();
+        }
+    });
+});
 
-    const chatWindow = document.getElementById('chat-window');
+// --- كود الدردشة (مؤقت) ---
+document.addEventListener('DOMContentLoaded', () => {
     const chatInput = document.getElementById('chat-input');
     const sendButton = document.getElementById('send-button');
     const thinkingIndicator = document.getElementById('thinking-indicator');
-
-    // --- كلمة المرور السرية ---
-    // !!! غير هذه الكلمة إلى كلمة مرور قوية من اختيارك !!!
-    const SECRET_PASSWORD = "0102948596Aa";
-
-// --- منطق تسجيل الدخول ---
-loginButton.addEventListener('click', () => {
-    console.log("المدخل:", passwordInput.value);
-    console.log("السري:", SECRET_PASSWORD);
-    if (passwordInput.value === SECRET_PASSWORD) {
-        // كلمة المرور صحيحة
-        loginScreen.classList.remove('active');
-        studioScreen.classList.add('active');
-    } else {
-        // كلمة المرور خاطئة
-        loginError.textContent = "كلمة المرور غير صحيحة.";
-        passwordInput.value = "";
-    }
-});
-
-    
-// للسماح بالدخول عند الضغط على Enter
-passwordInput.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') {
-        // منع السلوك الافتراضي لـ Enter (مثل إرسال نموذج)
-        event.preventDefault(); 
-        loginButton.click();
-    }
-});
-
-
-
-    // --- منطق الدردشة (مؤقت حاليًا) ---
-    sendButton.addEventListener('click', sendMessage);
-    chatInput.addEventListener('keyup', (event) => {
-        if (event.key === 'Enter') {
-            sendMessage();
-        }
-    });
-
-    function sendMessage() {
-        const userMessage = chatInput.value.trim();
-        if (userMessage === "") return;
-
-        // 1. عرض رسالة المستخدم
-        addMessageToChat(userMessage, 'user');
-        chatInput.value = "";
-
-        // 2. إظهار مؤشر التفكير
-        thinkingIndicator.style.display = 'block';
-        sendButton.disabled = true;
-
-        // 3. محاكاة رد مانوس (سيتم استبدال هذا لاحقًا بالاتصال الحقيقي)
-        setTimeout(() => {
-            thinkingIndicator.style.display = 'none';
-            sendButton.disabled = false;
-            const manusReply = `لقد استقبلت رسالتك: "${userMessage}". لكنني لست متصلاً بالخادم بعد.`;
-            addMessageToChat(manusReply, 'manus');
-        }, 1500); // انتظر ثانية ونصف للرد
-    }
+    const chatWindow = document.getElementById('chat-window');
 
     function addMessageToChat(text, sender) {
         const messageElement = document.createElement('div');
         messageElement.classList.add('message', `${sender}-message`);
         messageElement.textContent = text;
         chatWindow.appendChild(messageElement);
-        // انزل إلى أسفل المحادثة تلقائيًا
         chatWindow.scrollTop = chatWindow.scrollHeight;
     }
 
+    function sendMessage() {
+        const userMessage = chatInput.value.trim();
+        if (userMessage === "") return;
+
+        addMessageToChat(userMessage, 'user');
+        chatInput.value = "";
+
+        thinkingIndicator.style.display = 'block';
+        sendButton.disabled = true;
+
+        setTimeout(() => {
+            thinkingIndicator.style.display = 'none';
+            sendButton.disabled = false;
+            const manusReply = `لقد استقبلت رسالتك: "${userMessage}". لكنني لست متصلاً بالخادم بعد.`;
+            addMessageToChat(manusReply, 'manus');
+        }, 1500);
+    }
+
+    sendButton.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keyup', (event) => {
+        if (event.key === 'Enter') {
+            sendMessage();
+        }
+    });
 });
