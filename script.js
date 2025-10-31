@@ -1,75 +1,97 @@
+// --- كلمة المرور ---
+// لا تغيرها إلا إذا أردت ذلك
+const SECRET_PASSWORD = "كلمة المرور الرقمية التي تعمل معك"; // !!! استبدل هذا بكلمة مرورك الرقمية الصحيحة
+
+// --- عنوان الخادم (المايسترو) ---
+// هذا هو الرابط للوظيفة السحابية التي أنشأناها على Netlify
+const API_ENDPOINT = `/.netlify/functions/chat`;
+
+
+// --- منطق تسجيل الدخول (لا يتغير) ---
 function checkPassword() {
-    // كلمة المرور السرية
-    const secret = "0102948596"; 
-
-    // اقرأ القيمة من حقل الإدخال
     const input = document.getElementById('password-input').value;
-
-    // قارن بينهما
-    if (input === secret) {
-        // إذا كانت صحيحة، اخفِ شاشة الدخول وأظهر الاستوديو
+    if (input === SECRET_PASSWORD) {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('studio-screen').style.display = 'flex';
     } else {
-        // إذا كانت خاطئة، أظهر رسالة خطأ
-        const loginError = document.getElementById('login-error');
-        loginError.textContent = "كلمة المرور غير صحيحة. حاول مرة أخرى.";
-        // امسح حقل الإدخال
+        document.getElementById('login-error').textContent = "كلمة المرور غير صحيحة.";
         document.getElementById('password-input').value = "";
     }
 }
 
-// --- ربط الوظيفة بالأحداث ---
-
-// انتظر حتى يتم تحميل الصفحة بالكامل
-document.addEventListener('DOMContentLoaded', () => {
-    // اربط الزر بالوظيفة
-    document.getElementById('login-button').addEventListener('click', checkPassword);
-
-    // اربط زر Enter بالوظيفة
-    document.getElementById('password-input').addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-            event.preventDefault(); // امنع السلوك الافتراضي
-            checkPassword();
-        }
-    });
-});
-
-// --- كود الدردشة (مؤقت) ---
-document.addEventListener('DOMContentLoaded', () => {
+// --- منطق الدردشة (النسخة النهائية) ---
+async function sendMessage() {
     const chatInput = document.getElementById('chat-input');
     const sendButton = document.getElementById('send-button');
     const thinkingIndicator = document.getElementById('thinking-indicator');
+    
+    const userMessage = chatInput.value.trim();
+    if (userMessage === "") return;
+
+    // 1. عرض رسالة المستخدم فورًا
+    addMessageToChat(userMessage, 'user');
+    chatInput.value = "";
+
+    // 2. إظهار مؤشر التفكير وتعطيل الزر
+    thinkingIndicator.style.display = 'block';
+    sendButton.disabled = true;
+
+    try {
+        // 3. إرسال الرسالة إلى الخادم (المايسترو)
+        const response = await fetch(API_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: userMessage })
+        });
+
+        if (!response.ok) {
+            // إذا فشل الخادم في الرد بشكل صحيح
+            throw new Error(`Server error: ${response.statusText}`);
+        }
+
+        // 4. استقبال الرد الحقيقي من الخادم
+        const data = await response.json();
+        const manusReply = data.reply;
+
+        // 5. عرض رد مانوس الحقيقي
+        addMessageToChat(manusReply, 'manus');
+
+    } catch (error) {
+        // في حالة فشل الاتصال بالخادم
+        console.error("Fetch error:", error);
+        addMessageToChat("عذرًا، لا يمكنني الوصول إلى عقلي الآن. حاول مرة أخرى.", 'manus');
+    } finally {
+        // 6. إخفاء مؤشر التفكير وتفعيل الزر مجددًا
+        thinkingIndicator.style.display = 'none';
+        sendButton.disabled = false;
+    }
+}
+
+// --- وظيفة مساعدة لإضافة الرسائل (لا تتغير) ---
+function addMessageToChat(text, sender) {
     const chatWindow = document.getElementById('chat-window');
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('message', `${sender}-message`);
+    messageElement.textContent = text;
+    chatWindow.appendChild(messageElement);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+}
 
-    function addMessageToChat(text, sender) {
-        const messageElement = document.createElement('div');
-        messageElement.classList.add('message', `${sender}-message`);
-        messageElement.textContent = text;
-        chatWindow.appendChild(messageElement);
-        chatWindow.scrollTop = chatWindow.scrollHeight;
-    }
 
-    function sendMessage() {
-        const userMessage = chatInput.value.trim();
-        if (userMessage === "") return;
+// --- ربط كل شيء بالأحداث عند تحميل الصفحة ---
+document.addEventListener('DOMContentLoaded', () => {
+    // ربط تسجيل الدخول
+    document.getElementById('login-button').addEventListener('click', checkPassword);
+    document.getElementById('password-input').addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            checkPassword();
+        }
+    });
 
-        addMessageToChat(userMessage, 'user');
-        chatInput.value = "";
-
-        thinkingIndicator.style.display = 'block';
-        sendButton.disabled = true;
-
-        setTimeout(() => {
-            thinkingIndicator.style.display = 'none';
-            sendButton.disabled = false;
-            const manusReply = `لقد استقبلت رسالتك: "${userMessage}". لكنني لست متصلاً بالخادم بعد.`;
-            addMessageToChat(manusReply, 'manus');
-        }, 1500);
-    }
-
-    sendButton.addEventListener('click', sendMessage);
-    chatInput.addEventListener('keyup', (event) => {
+    // ربط الدردشة
+    document.getElementById('send-button').addEventListener('click', sendMessage);
+    document.getElementById('chat-input').addEventListener('keyup', (event) => {
         if (event.key === 'Enter') {
             sendMessage();
         }
