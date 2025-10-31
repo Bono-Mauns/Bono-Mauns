@@ -1,6 +1,6 @@
 function checkPassword() {
     // كلمة المرور السرية
-    const secret = "0102948596Aa"; 
+    const secret = "0102948596"; 
 
     // اقرأ القيمة من حقل الإدخال
     const input = document.getElementById('password-input').value;
