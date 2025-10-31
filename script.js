@@ -33,12 +33,15 @@ loginButton.addEventListener('click', () => {
 });
 
     
-    // للسماح بالدخول عند الضغط على Enter
-    passwordInput.addEventListener('keyup', (event) => {
-        if (event.key === 'Enter') {
-            loginButton.click();
-        }
-    });
+// للسماح بالدخول عند الضغط على Enter
+passwordInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        // منع السلوك الافتراضي لـ Enter (مثل إرسال نموذج)
+        event.preventDefault(); 
+        loginButton.click();
+    }
+});
+
 
 
     // --- منطق الدردشة (مؤقت حاليًا) ---
