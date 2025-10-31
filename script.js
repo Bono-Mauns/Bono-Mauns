@@ -17,18 +17,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // !!! غير هذه الكلمة إلى كلمة مرور قوية من اختيارك !!!
     const SECRET_PASSWORD = "0102948596Aa";
 
-    // --- منطق تسجيل الدخول ---
-    loginButton.addEventListener('click', () => {
-        if (passwordInput.value === SECRET_PASSWORD) {
-            // كلمة المرور صحيحة
-            loginScreen.classList.remove('active');
-            studioScreen.classList.add('active');
-        } else {
-            // كلمة المرور خاطئة
-            loginError.textContent = "كلمة المرور غير صحيحة.";
-            passwordInput.value = "";
-        }
-    });
+// --- منطق تسجيل الدخول ---
+loginButton.addEventListener('click', () => {
+    console.log("المدخل:", passwordInput.value);
+    console.log("السري:", SECRET_PASSWORD);
+    if (passwordInput.value === SECRET_PASSWORD) {
+        // كلمة المرور صحيحة
+        loginScreen.classList.remove('active');
+        studioScreen.classList.add('active');
+    } else {
+        // كلمة المرور خاطئة
+        loginError.textContent = "كلمة المرور غير صحيحة.";
+        passwordInput.value = "";
+    }
+});
+
     
     // للسماح بالدخول عند الضغط على Enter
     passwordInput.addEventListener('keyup', (event) => {
