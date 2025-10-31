@@ -13,7 +13,7 @@ exports.handler = async function(event, context) {
 
     try {
         // --- !!! تنبيه: استخدام المفتاح مباشرة في الكود (للتجربة فقط) !!! ---
-        const genAI = new GoogleGenerativeAI("AIzaSyAxo1mfi0MRwdYlGNTP6MCZJeh-L1fi6sA");
+        const genAI = new GoogleGenerativeAI("AIzaSyAQcm0dOOjFXPdhmQoqlYuqRtzqZVXL9_A");
         
         // استخراج رسالة المستخدم من الطلب القادم
         const requestBody = JSON.parse(event.body);
