@@ -1,20 +1,47 @@
+// استيراد مكتبة جوجل للذكاء الاصطناعي
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+
 // هذا هو ملف الخادم (الوظيفة السحابية) الخاص بنا
-// اسمه الرسمي هو "handler"
 exports.handler = async function(event, context) {
     
-    // 1. استخراج الرسالة القادمة من المستخدم
-    // event.body يحتوي على البيانات التي أرسلها الموقع
-    const requestBody = JSON.parse(event.body);
-    const userMessage = requestBody.message;
-
-    // 2. هنا سنضع كود الاتصال بـ Google Gemini API لاحقًا
-    // حاليًا، سنقوم فقط بإضافة كلمة "الخادم" إلى الرسالة للرد
+    // --- 1. الإعداد والتحقق ---
     
-    const manusReply = `أنا الخادم الحقيقي. لقد استقبلت رسالتك: "${userMessage}"`;
+    // تأكد من أن الطلب هو من نوع POST (لإرسال البيانات)
+    if (event.httpMethod !== "POST" ) {
+        return { statusCode: 405, body: "Method Not Allowed" };
+    }
 
-    // 3. إرجاع الرد إلى الموقع
-    return {
-        statusCode: 200, // 200 تعني "نجح الطلب"
-        body: JSON.stringify({ reply: manusReply })
-    };
+    try {
+        // قراءة مفتاح API السري من "خزنة" Netlify
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        
+        // استخراج رسالة المستخدم من الطلب القادم
+        const requestBody = JSON.parse(event.body);
+        const userMessage = requestBody.message;
+
+        // --- 2. الاتصال بـ Gemini ---
+
+        // اختر النموذج الذي تريد استخدامه
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+        // ابدأ محادثة جديدة وأرسل رسالة المستخدم
+        const chat = model.startChat();
+        const result = await chat.sendMessage(userMessage);
+        const response = await result.response;
+        const manusReply = response.text();
+
+        // --- 3. إرجاع الرد الحقيقي من Gemini ---
+        return {
+            statusCode: 200,
+            body: JSON.stringify({ reply: manusReply })
+        };
+
+    } catch (error) {
+        // في حالة حدوث أي خطأ (مثل مفتاح API خاطئ)
+        console.error("Error calling Gemini API:", error);
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ error: "حدث خطأ أثناء الاتصال بـ مانوس." })
+        };
+    }
 };
