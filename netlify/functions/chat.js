@@ -22,7 +22,7 @@ exports.handler = async function(event, context) {
         // --- 2. الاتصال بـ Gemini ---
 
         // اختر النموذج الذي تريد استخدامه
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
 
         // ابدأ محادثة جديدة وأرسل رسالة المستخدم
         const chat = model.startChat();
