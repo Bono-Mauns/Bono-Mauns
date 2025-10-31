@@ -7,13 +7,13 @@ exports.handler = async function(event, context) {
     // --- 1. الإعداد والتحقق ---
     
     // تأكد من أن الطلب هو من نوع POST (لإرسال البيانات)
-    if (event.httpMethod !== "POST" ) {
+    if (event.httpMethod !== "POST"  ) {
         return { statusCode: 405, body: "Method Not Allowed" };
     }
 
     try {
-        // قراءة مفتاح API السري من "خزنة" Netlify
-        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        // --- !!! تنبيه: استخدام المفتاح مباشرة في الكود (للتجربة فقط) !!! ---
+        const genAI = new GoogleGenerativeAI("AIzaSyAQcm0dOOjFXPdhmQoqlYuqRtzqZVXL9_A");
         
         // استخراج رسالة المستخدم من الطلب القادم
         const requestBody = JSON.parse(event.body);
