@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- كلمة المرور السرية ---
     // !!! غير هذه الكلمة إلى كلمة مرور قوية من اختيارك !!!
-    const SECRET_PASSWORD = "Bono&Manus_2025";
+    const SECRET_PASSWORD = "0102948596Aa";
 
     // --- منطق تسجيل الدخول ---
     loginButton.addEventListener('click', () => {
